@@ -34,7 +34,7 @@ class Logger {
     }
 
     _initDate() {
-
+        //TODO
     }
 
     _initCommon() {
@@ -112,8 +112,5 @@ class Logger {
         this._logger.error(args);
     }
 }
-
-let testlogger = new Logger('File', 'testlog');
-testlogger.info('test');
 
 module.exports = Logger;
