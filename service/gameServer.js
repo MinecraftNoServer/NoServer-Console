@@ -30,8 +30,10 @@ class GameServer extends BaseServer {
         }
     }
 
-    svrout() {
-
+    sendMessage(data) {
+        if (this.gameServer) {
+            this.gameServer.stdin.write(data);
+        }
     }
 
     execServer() {
@@ -45,11 +47,10 @@ class GameServer extends BaseServer {
         options.push(`-jar`);
         options.push(`${path.join(this.gamePath, this.forgeVersion)}`);
         this.gameServer = this._startNewServer(options);
-
     }
 
     stopServer() {
-
+        this.sendMessage(`stop`);
     }
 }
 
