@@ -31,6 +31,7 @@ class Logger {
         this.options = options || {};
         this._initCommon();
         instances[type + name] = this;
+        return this;
     }
 
     _initDate() {

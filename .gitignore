@@ -1,4 +1,3 @@
-.vscode/
+.vscode
 node_modules
-.idea/
-*.swp
+*.log
