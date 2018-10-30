@@ -4,7 +4,7 @@ const BaseServer = require('./baseServer');
 const configServer = require('./configServer');
 const path = require('path');
 const readline = require('readline');
-
+const webConsoleServer = require('./webConsoleServer');
 class GameServer extends BaseServer {
 
     _startNewServer(options) {
@@ -17,9 +17,11 @@ class GameServer extends BaseServer {
                 input: _server.stderr
             });
             this.out.on('line', (linedata) => {
+                webConsoleServer.sendMessage(linedata);
                 this.logger.info(linedata);
             });
             this.err.on('line', (linedata) => {
+                webConsoleServer.sendMessage(linedata);
                 this.logger.error(linedata);
             });
             this.logger.info(`Server start success`);

@@ -35,7 +35,7 @@ const start = async () => {
         }
         app.use(allowCrossDomain);
 
-        app.use('/static', express.static(path.join(__dirname, './static/res')));
+        app.use('/static', express.static(path.join(__dirname, './static')));
         app.use('/', require('./router/'));
 
 

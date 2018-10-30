@@ -1,0 +1,131 @@
+<html>
+
+<head>
+    <title>SSH Terminal</title>
+    <link rel="stylesheet" href="/websshtest/xterm.css" />
+    <script src="/websshtest/xterm.js"></script>
+    <script src="/websshtest/addons/fit/fit.js"></script>
+    <script src="/websshtest/jquery.min.js"></script>a
+    <script src="/websshtest/uuid.js"></script>
+    <script>
+        var username = window.prompt('username:');
+        var password = window.prompt('password:');
+
+        var socket;
+        var sid = uuidv1();
+        var ticket;
+        window.addEventListener('load', () => {
+            var terminalContainer = document.getElementById('terminal-container');
+            var term = new Terminal({ cursorBlink: true });
+            term.open(terminalContainer);
+            term.fit();
+            //此处应替换为模板渲染
+            //使用原生websocket，可使用socket.io降级
+            //socket = new WebSocket('ws://websshproxy.sparta.html5.qq.com/');
+            socket = new WebSocket('ws://localhost:8080?startssh=true')
+            socket.onopen = async function () {
+
+                //产生连接id
+                //WS建立连接时已鉴权 sgn参数暂不需要
+                socket.send(JSON.stringify({
+                    sid,
+                    cid: 'Browser',
+                    method: 'web',
+                    sgn: '',
+                    username,
+                    password
+                }));
+
+                await new Promise((resolve) => {
+                    socket.onmessage = (data) => {
+                        if (data.data.match(/ticket/) != null) {
+                            ticket = JSON.parse(data.data)
+                            term.write(data.data + '\r\n')
+                            return resolve()
+                        }
+                    }
+                })
+
+                term.write('\r\n*** Connected to webssh server***\r\n');
+
+                await new Promise((resolve) => {
+                    socket.onmessage = (data) => {
+
+                        //term.write('DEBUG---' + data.data + '\r\n');
+                        if (data.data.match(/OK/) != null) {
+                            return resolve();
+                        } else {
+                            if (data.data.match(/err/) != null) {
+                                window.alert(JSON.parse(data.data))
+                                window.location.reload();
+                            } else {
+                                term.write(data.data + '\r\n');
+                            }
+                        }
+                    }
+                })
+
+                term.write('resolved' + '\r\n');
+
+                term.on('data', (data) => {
+                    //console.log(data);
+                    //socket.emit('data', data);
+                    socket.send(JSON.stringify({
+                        "objobj":"objobj",
+                        ticket,
+                        data
+                    }))
+                });
+
+                // Backend -> Browser
+                socket.onmessage = function (data) {
+                    term.write(data.data);
+                }
+
+                socket.onclose = function () {
+                    term.write('\r\n*** Disconnected from webssh server***\r\n');
+                }
+
+            }
+        }, false);
+    </script>
+    <style>
+        body {
+            font-family: helvetica, sans-serif, arial;
+            font-size: 1em;
+            color: #111;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #terminal-container {
+            width: 960px;
+            height: 600px;
+            display: inline-block;
+            padding: 2px;
+        }
+
+        .function {
+            display: inline-block;
+            float: right;
+        }
+
+        #terminal-container .terminal {
+            background-color: #111;
+            color: #fafafa;
+            padding: 2px;
+        }
+
+        #terminal-container .terminal:focus .terminal-cursor {
+            background-color: #fafafa;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="terminal-container"></div>
+</body>
+
+</html>
