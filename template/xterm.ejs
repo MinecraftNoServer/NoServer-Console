@@ -8,8 +8,6 @@
     <script src="/static/xterm/dist/jquery.min.js"></script>a
     <script src="/static/xterm/dist/uuid.js"></script>
     <script>
-        var username = window.prompt('username:');
-        var password = window.prompt('password:');
 
         var socket;
 
@@ -26,12 +24,16 @@
                 term.write('\r\n*** Connected to webconsole server***\r\n');
 
                 term.on('data', function (data) {
+                    if (data == '\r') {
+                        data = '\r\n';
+                    }
                     socket.send(data);
+                    term.write(data)
                 });
 
                 // Backend -> Browser
                 socket.onmessage = function (data) {
-                    term.write(data);
+                    term.write(data.data);
                 }
 
                 socket.onclose = function () {
@@ -40,7 +42,6 @@
 
             }
         }, false);
-        socket.send(`login|${username}|${password}`);
     </script>
     <style>
         body {

@@ -1,10 +1,9 @@
 'use strict';
 const spawn = require('child_process').spawn;
 const BaseServer = require('./baseServer');
-const configServer = require('./configServer');
+const configServer = require('./configServer').create();
 const path = require('path');
 const readline = require('readline');
-const webConsoleServer = require('./webConsoleServer');
 class GameServer extends BaseServer {
 
     _startNewServer(options) {
@@ -17,11 +16,11 @@ class GameServer extends BaseServer {
                 input: _server.stderr
             });
             this.out.on('line', (linedata) => {
-                webConsoleServer.sendMessage(linedata);
+                this.webConsoleServer.sendMessage(linedata);
                 this.logger.info(linedata);
             });
             this.err.on('line', (linedata) => {
-                webConsoleServer.sendMessage(linedata);
+                this.webConsoleServer.sendMessage(linedata);
                 this.logger.error(linedata);
             });
             this.logger.info(`Server start success`);
@@ -38,7 +37,7 @@ class GameServer extends BaseServer {
         }
     }
 
-    execServer() {
+    execServer(webConsoleServer) {
         this.gamePath = configServer.getGamePath();
         this.memMax = configServer.getMemMax();
         this.memMin = configServer.getMemMin();
@@ -49,6 +48,7 @@ class GameServer extends BaseServer {
         options.push(`-jar`);
         options.push(`${path.join(this.gamePath, this.forgeVersion)}`);
         this.gameServer = this._startNewServer(options);
+        this.webConsoleServer = webConsoleServer;
     }
 
     stopServer() {
@@ -56,4 +56,4 @@ class GameServer extends BaseServer {
     }
 }
 
-module.exports = new GameServer
+module.exports = GameServer

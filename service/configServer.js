@@ -13,7 +13,7 @@ class configServer extends BaseServer {
 
     }
     getGamePath() {
-        return 'D:\\NoServer\\Server\\.minecraft'
+        return 'F:\\NoServerTest\\'
     }
     getMemMax() {
         return 8102;
@@ -22,8 +22,8 @@ class configServer extends BaseServer {
         return 1024;
     }
     getForgeVersion() {
-        return 'forge-1.12.2-14.23.4.2707-universal.jar';
+        return 'test.jar';
     }
 }
 
-module.exports = new configServer;
+module.exports = configServer;

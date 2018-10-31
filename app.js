@@ -9,6 +9,8 @@ const helmet = require('helmet');
 const cookieparser = require('cookie-parser');
 const configServer = require('./service/configServer');
 const app = express();
+const gameServer = require('./service/gameServer');
+const WebConsoleServer = require('./service/webConsoleServer');
 
 const start = async () => {
     try {
@@ -49,6 +51,10 @@ const start = async () => {
             logger.info(`SERVER START TIME: ${Date()}`)
             logger.info(`SERVER LISTENING ON PORT ${app.get('port')}`);
         })
+
+        server.webConsoleServer = new WebConsoleServer(server);
+        server.gameInstance = gameServer.create();
+        server.gameInstance.execServer(server.webConsoleServer);
 
     } catch (err) {
         logger.error(err);

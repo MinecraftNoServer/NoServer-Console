@@ -10,7 +10,7 @@ const initRouter = () => {
     router.get('/console', (req, res) => {
         res.render('xterm', {
             sshConfig: {
-                wsurl: 'localhost'
+                wsurl: 'ws://localhost:8080'
             }
         });
     })
