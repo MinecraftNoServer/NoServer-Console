@@ -9,6 +9,12 @@ class GameServer extends BaseServer {
     _startNewServer(options) {
         try {
             let _server = spawn('java', options);
+            _server.stdout.on('data', (data) => {
+                this.webConsoleServer.sendMessage(data);
+            })
+            _server.stderr.on('data', (data) => {
+                this.webConsoleServer.sendMessage(data);
+            })
             this.out = readline.createInterface({
                 input: _server.stdout
             });
@@ -16,11 +22,10 @@ class GameServer extends BaseServer {
                 input: _server.stderr
             });
             this.out.on('line', (linedata) => {
-                this.webConsoleServer.sendMessage(linedata);
+
                 this.logger.info(linedata);
             });
             this.err.on('line', (linedata) => {
-                this.webConsoleServer.sendMessage(linedata);
                 this.logger.error(linedata);
             });
             this.logger.info(`Server start success`);
@@ -38,6 +43,7 @@ class GameServer extends BaseServer {
     }
 
     execServer(webConsoleServer) {
+        this.webConsoleServer = webConsoleServer;
         this.gamePath = configServer.getGamePath();
         this.memMax = configServer.getMemMax();
         this.memMin = configServer.getMemMin();
@@ -48,7 +54,6 @@ class GameServer extends BaseServer {
         options.push(`-jar`);
         options.push(`${path.join(this.gamePath, this.forgeVersion)}`);
         this.gameServer = this._startNewServer(options);
-        this.webConsoleServer = webConsoleServer;
     }
 
     stopServer() {

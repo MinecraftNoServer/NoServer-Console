@@ -22,7 +22,10 @@ class WebConsoleServer extends BaseServer {
     }
 
     sendMessage(data) {
-        this.socket.send(data);
+        if (this.socket) {
+            data = data.toString();
+            this.socket.send(data);
+        }
     }
 }
 

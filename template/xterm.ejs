@@ -33,7 +33,10 @@
 
                 // Backend -> Browser
                 socket.onmessage = function (data) {
+                    if (data.data[data.data.length] === '\r')
+                        data.data += '\n'
                     term.write(data.data);
+
                 }
 
                 socket.onclose = function () {
