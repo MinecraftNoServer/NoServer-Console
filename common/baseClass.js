@@ -10,7 +10,7 @@ class BaseClass {
         this.logger = new logger('File', name);
     }
 
-    static Instance() {
+    static create() {
         let obj = new this(...arguments);
         if (!instances[obj.constructor.name]) {
             instances[obj.constructor.name] = obj;

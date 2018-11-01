@@ -1,15 +1,19 @@
-// this.gamePath = configServer.getGamePath();
-//         this.memMax = configServer.getMemMax();
-//         this.memMin = configServer.getMemMin();
-//         this.forgeVersion = configServer.getForgeVersion();
-//         let options = `-Xmx${this.memMax}M -Xms${this.memMin}M -jar ${this.forgeVersion}`;
-//         this.gameServer = this._startNewServer(options);
 'use strict'
 const BaseServer = require('./baseServer');
-
+const fs = require('fs')
 class configServer extends BaseServer {
+    constructor() {
+        super(...arguments);
+        this.gameServerConfig = {};
+        this.webServerConfig = {};
+        this.dataServerConfig = {};
+        this._init();
+    }
+    _init() {
+
+    }
     getGamePath() {
-        return 'D:\\NoServer\\Server\\.minecraft'
+        return 'F:\\NoServerTest\\'
     }
     getMemMax() {
         return 8102;
@@ -18,8 +22,8 @@ class configServer extends BaseServer {
         return 1024;
     }
     getForgeVersion() {
-        return 'forge-1.12.2-14.23.4.2707-universal.jar';
+        return 'test.jar';
     }
 }
 
-module.exports = new configServer;
+module.exports = configServer;

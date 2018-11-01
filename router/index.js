@@ -7,7 +7,13 @@ const initRouter = () => {
         logger.info(`index request`);
         res.render('index');
     })
-
+    router.get('/console', (req, res) => {
+        res.render('xterm', {
+            sshConfig: {
+                wsurl: 'ws://localhost:8080'
+            }
+        });
+    })
     return router;
 }
 

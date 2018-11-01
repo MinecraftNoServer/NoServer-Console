@@ -1,15 +1,20 @@
 'use strict';
 const spawn = require('child_process').spawn;
 const BaseServer = require('./baseServer');
-const configServer = require('./configServer');
+const configServer = require('./configServer').create();
 const path = require('path');
 const readline = require('readline');
-
 class GameServer extends BaseServer {
 
     _startNewServer(options) {
         try {
             let _server = spawn('java', options);
+            _server.stdout.on('data', (data) => {
+                this.webConsoleServer.sendMessage(data);
+            })
+            _server.stderr.on('data', (data) => {
+                this.webConsoleServer.sendMessage(data);
+            })
             this.out = readline.createInterface({
                 input: _server.stdout
             });
@@ -17,6 +22,7 @@ class GameServer extends BaseServer {
                 input: _server.stderr
             });
             this.out.on('line', (linedata) => {
+
                 this.logger.info(linedata);
             });
             this.err.on('line', (linedata) => {
@@ -36,7 +42,8 @@ class GameServer extends BaseServer {
         }
     }
 
-    execServer() {
+    execServer(webConsoleServer) {
+        this.webConsoleServer = webConsoleServer;
         this.gamePath = configServer.getGamePath();
         this.memMax = configServer.getMemMax();
         this.memMin = configServer.getMemMin();
@@ -54,4 +61,4 @@ class GameServer extends BaseServer {
     }
 }
 
-module.exports = new GameServer
+module.exports = GameServer

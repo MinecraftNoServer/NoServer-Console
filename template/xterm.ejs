@@ -1,0 +1,88 @@
+<html>
+
+<head>
+    <title>SSH Terminal</title>
+    <link rel="stylesheet" href="/static/xterm/dist/xterm.css" />
+    <script src="/static/xterm/dist/xterm.js"></script>
+    <script src="/static/xterm/dist/addons/fit/fit.js"></script>
+    <script src="/static/xterm/dist/jquery.min.js"></script>a
+    <script src="/static/xterm/dist/uuid.js"></script>
+    <script>
+
+        var socket;
+
+        window.addEventListener('load', () => {
+            var terminalContainer = document.getElementById('terminal-container');
+            var term = new Terminal({ cursorBlink: true });
+            term.open(terminalContainer);
+            term.fit();
+
+            //使用原生websocket，可使用socket.io降级
+            socket = new WebSocket('<%= sshConfig.wsurl%>')
+            socket.onopen = async () => {
+
+                term.write('\r\n*** Connected to webconsole server***\r\n');
+
+                term.on('data', function (data) {
+                    if (data == '\r') {
+                        data = '\r\n';
+                    }
+                    socket.send(data);
+                    term.write(data)
+                });
+
+                // Backend -> Browser
+                socket.onmessage = function (data) {
+                    if (data.data[data.data.length] === '\r')
+                        data.data += '\n'
+                    term.write(data.data);
+
+                }
+
+                socket.onclose = function () {
+                    term.write('\r\n*** Disconnected from webssh server***\r\n');
+                }
+
+            }
+        }, false);
+    </script>
+    <style>
+        body {
+            font-family: helvetica, sans-serif, arial;
+            font-size: 1em;
+            color: #111;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #terminal-container {
+            width: 960px;
+            height: 600px;
+            display: inline-block;
+            padding: 2px;
+        }
+
+        .function {
+            display: inline-block;
+            float: right;
+        }
+
+        #terminal-container .terminal {
+            background-color: #111;
+            color: #fafafa;
+            padding: 2px;
+        }
+
+        #terminal-container .terminal:focus .terminal-cursor {
+            background-color: #fafafa;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="terminal-container"></div>
+</body>
+
+</html>
