@@ -9,18 +9,18 @@ class FileServer extends BaseServer {
     }
 
     makeFile(path, filename) {
-        var fullname=libpath.join(path,filename)
+        let fullname=libpath.join(path,filename)
         this.logger.info("creating file: " + fullname)
         fs.writeFileSync(fullname,'','utf8')
     }
 
     makeDir(path) {
         this.logger.info("creating directory: "+path)
-        fs.mkdirSync(path)
+        fs.mkdirSync(path,{recursive:true}) // This requires Node 10.1 +
     }
 
     deleteFile(path, filename) {
-        var fullname=libpath.join(path,filename)
+        let fullname=libpath.join(path,filename)
         this.logger.info("deleting file: "+fullname)
         fs.unlink(fullname)
     }
@@ -28,9 +28,9 @@ class FileServer extends BaseServer {
     deleteDir(path) {
         this.logger.info("deleting directory: "+path)
         if(fs.existsSync(path)) {
-            var files=fs.readdirSync(path)
+            let files=fs.readdirSync(path)
             files.forEach(function(file,index) {
-                var curPath=libpath.join(path,file)
+                let curPath=libpath.join(path,file)
                 if(fs.statSync(curPath).isDirectory()) {
                     deleteDir(curPath)
                 } else {
@@ -58,11 +58,11 @@ class FileServer extends BaseServer {
 
     // Return: Promise
     copyFile(src,dest,filename) {
-        var src_fullname=libpath.join(src,filename)
-        var dest_fullname=libpath.join(dest,filename)
+        let src_fullname=libpath.join(src,filename)
+        let dest_fullname=libpath.join(dest,filename)
         this.logger.info("Copying from "+src_fullname+" to "+dest_fullname)
         return new Promise(function(resolve,reject){
-            var write_stream=fs.createWriteStream(dest_fullname)
+            let write_stream=fs.createWriteStream(dest_fullname)
             write_stream.on('finish',function(){
                 resolve('finish')
             })
@@ -76,10 +76,10 @@ class FileServer extends BaseServer {
     async copyDir(src,dest) {
         this.logger.info("copying directory from: " + src + " to " + dest)
         makeDir(dest)
-        var lst=getFileList(src)
+        let lst=getFileList(src)
         lst.forEach(function(file,index){
-            var curPath=libpath.join(src,file)
-            var destPath=libpath.join(dest,file)
+            let curPath=libpath.join(src,file)
+            let destPath=libpath.join(dest,file)
             if(fs.statSync(curPath).isDirectory()) {
                 copyDir(curPath,destPath)
             } else {
