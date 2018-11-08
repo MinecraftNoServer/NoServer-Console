@@ -1,6 +1,6 @@
 {
-    "path": "",
-    "forge": "",
-    "memMax": "",
-    "memMin": ""
+    "path": "123",
+    "forge": "456",
+    "memMax": "789",
+    "memMin": "321"
 }

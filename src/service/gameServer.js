@@ -6,9 +6,13 @@ const path = require('path');
 const readline = require('readline');
 class GameServer extends BaseServer {
 
-    _startNewServer(options) {
+    _startNewServer(args) {
         try {
-            let _server = spawn('java', options);
+            let options = {
+                cwd: this.gamePath,
+                env: process.env
+            }
+            let _server = spawn('java', args, options);
             _server.stdout.on('data', (data) => {
                 this.webConsoleServer.sendMessage(data);
             })
